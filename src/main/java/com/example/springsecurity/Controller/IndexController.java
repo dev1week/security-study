@@ -3,6 +3,7 @@ package com.example.springsecurity.Controller;
 import com.example.springsecurity.Repository.UserRepository;
 import com.example.springsecurity.domain.User;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -39,6 +40,8 @@ public class IndexController {
     public String loginForm(){
         return "loginForm";
     }
+
+
     @GetMapping("/joinForm")
     public String joinForm(){
         return "joinForm";
@@ -57,5 +60,13 @@ public class IndexController {
 
         return "redirect:/";
     }
+//
+//    //@Secured("ADMIN")
+//    @PreAuthorize("hasRole('ROLE_MANAGER')or hasRole('ROLE_ADMIN')") // 함수 시작전
+//    @PostAuthorize(...                                               // 함수 종료 후
+//    @GetMapping("/info")
+//    public @ResponseBody String info(){
+//        return "개인정보";
+//    }
 
 }
