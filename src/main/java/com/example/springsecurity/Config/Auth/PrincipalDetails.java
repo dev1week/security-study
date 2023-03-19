@@ -21,6 +21,8 @@ import java.util.Map;
 public class PrincipalDetails implements UserDetails, OAuth2User {
     private User user; //콤포지션
 
+    private Map<String, Object> attributes;
+
     @Override
     public <A> A getAttribute(String name) {
         return OAuth2User.super.getAttribute(name);
@@ -28,11 +30,24 @@ public class PrincipalDetails implements UserDetails, OAuth2User {
 
     @Override
     public Map<String, Object> getAttributes() {
+        return attributes;
+    }
+
+    @Override
+    public String getName() {
+        //return attributes.get("sub");
         return null;
     }
 
+    //일반 로그인 생성자
     public PrincipalDetails(User user){
         this.user = user;
+    }
+
+    //oauth 로그인 생성자
+    public PrincipalDetails (User user, Map<String, Object> attributes){
+        this.user = user;
+        this.attributes = attributes;
     }
 
     //해당 유저의 권한정보를 반환
@@ -74,8 +89,5 @@ public class PrincipalDetails implements UserDetails, OAuth2User {
         return true;
     }
 
-    @Override
-    public String getName() {
-        return null;
-    }
+
 }
