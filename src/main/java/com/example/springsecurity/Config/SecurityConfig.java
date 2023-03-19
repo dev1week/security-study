@@ -1,5 +1,7 @@
 package com.example.springsecurity.Config;
 
+import com.example.springsecurity.Config.oauth.PrincipalOauth2UserService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
@@ -12,6 +14,10 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 @EnableWebSecurity //스프링 시큐리티 필터(Security Config)가 스프링 필터 체인에 등록된다.
 @EnableGlobalMethodSecurity(securedEnabled = true) //secured 어노테이션 활성화
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
+
+
+    @Autowired
+    private PrincipalOauth2UserService principalOauth2UserService;
     //패스워드 암호화
     //해당 메서드의 리턴되는 오브젝트를 IoC로 등록해준다.
     @Bean
@@ -36,7 +42,16 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .defaultSuccessUrl("/")
                 .and()
                 .oauth2Login()
-                .loginPage("/loginForm");
+                .loginPage("/loginForm")
+                //로그인이 완료된 후의 후처리가 필요함
+                    //1. 코드 받기 (인증)
+                    //2. 액세스 토큰(권한)
+                    //3. 사용자 프로필 정보를 가져옴
+                    //4-1. 가져온 정보를 토대로 회원가입 자동 진행
+                    //4-2. 추가 정보 받기
+                //액세스 토큰 + 사용자 프로필 정보를 가져옴
+                .userInfoEndpoint()
+                .userService(principalOauth2UserService);
 
     }
 }
