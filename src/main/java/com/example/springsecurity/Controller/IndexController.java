@@ -1,10 +1,15 @@
 package com.example.springsecurity.Controller;
 
+import com.example.springsecurity.Config.Auth.PrincipalDetails;
 import com.example.springsecurity.Repository.UserRepository;
 import com.example.springsecurity.domain.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -17,12 +22,37 @@ public class IndexController {
     @Autowired
     private BCryptPasswordEncoder bCryptPasswordEncoder;
 
+    @GetMapping("/test/login")
+    public @ResponseBody String testLogin(Authentication authentication,
+                                            @AuthenticationPrincipal UserDetails userDetails){
+        PrincipalDetails principalDetails = (PrincipalDetails) authentication.getPrincipal();
+        System.out.println("authentication: "+principalDetails.getUser());
+        //authentication: User(id=2, username=admin, password=$2a$10$pMxuiTsE5HXoW/fQRvgtC.kMOTYXfvNZc4IOfrL..TPFjofBtA1bC, email=admin@naver.com, role=ROLE_ADMIN, provider=null, providerId=null, createDate=2023-03-18 23:27:13.467)
+        //authentication: User(id=2, username=admin, password=$2a$10$pMxuiTsE5HXoW/fQRvgtC.kMOTYXfvNZc4IOfrL..TPFjofBtA1bC, email=admin@naver.com, role=ROLE_ADMIN, provider=null, providerId=null, createDate=2023-03-18 23:27:13.467)
+
+        System.out.println("userDetilas: "+userDetails.getUsername());
+        //serDetilas: admin
+        return "세션정보 확인됨";
+    }
+
+    @GetMapping("/test/oauth/login")
+    public @ResponseBody String testOauthLogin(Authentication authentication,
+                                                @AuthenticationPrincipal OAuth2User oauth){
+        OAuth2User oauth2User = (OAuth2User) authentication.getPrincipal();
+        System.out.println("authentication: "+oauth2User.getAttributes());
+        //authentication: {sub=116704309515134533612, name=김한주, given_name=한주, family_name=김, picture=https://lh3.googleusercontent.com/a/AGNmyxZaeAvGD2eM1R3WKKpl10wqqOY_zRFu-UneiwYLP-0=s96-c, email=rondo2860@gmail.com, email_verified=true, locale=ko}
+        System.out.println("oauth2user : "+oauth.getAttributes());
+        //oauth2user : {sub=116704309515134533612, name=김한주, given_name=한주, family_name=김, picture=https://lh3.googleusercontent.com/a/AGNmyxZaeAvGD2eM1R3WKKpl10wqqOY_zRFu-UneiwYLP-0=s96-c, email=rondo2860@gmail.com, email_verified=true, locale=ko}
+        return "세션정보 확인됨";
+    }
+
     @GetMapping({"", "/"})
     public String index(){
         return"index";
     }
     @GetMapping("/user")
-    public String user(){
+    public @ResponseBody String user(@AuthenticationPrincipal PrincipalDetails userDetails){
+
         return "user";
     }
 
