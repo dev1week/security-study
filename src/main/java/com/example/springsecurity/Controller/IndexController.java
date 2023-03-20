@@ -50,11 +50,17 @@ public class IndexController {
     public String index(){
         return"index";
     }
-    @GetMapping("/user")
-    public @ResponseBody String user(@AuthenticationPrincipal PrincipalDetails userDetails){
 
+    //이제부터는 oauth 로그인을 해도 PrincipalDetails로 받아올 수 있다.
+    @GetMapping("/user")
+    public @ResponseBody String user(@AuthenticationPrincipal PrincipalDetails principalDetails){
+        System.out.println("principalDetails : "+principalDetails.getUser());
         return "user";
     }
+    //oauth 로그인시 출력
+        //principalDetails : User(id=4, username=386552260515-sp79dr8l5q571dcklkm1k7sjvl61d2jt.apps.googleusercontent.com_116704309515134533612, password=null, email=rondo2860@gmail.com, role=ROLE_USEER, provider=386552260515-sp79dr8l5q571dcklkm1k7sjvl61d2jt.apps.googleusercontent.com, providerId=116704309515134533612, createDate=2023-03-20 12:55:59.566)
+    //일반 로그인시 출력
+        //principalDetails : User(id=2, username=admin, password=$2a$10$pMxuiTsE5HXoW/fQRvgtC.kMOTYXfvNZc4IOfrL..TPFjofBtA1bC, email=admin@naver.com, role=ROLE_ADMIN, provider=null, providerId=null, createDate=2023-03-18 23:27:13.467)
 
     @GetMapping("/admin")
     public String admin(){
