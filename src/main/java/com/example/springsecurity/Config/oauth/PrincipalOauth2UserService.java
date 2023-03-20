@@ -14,8 +14,7 @@ import com.example.springsecurity.domain.User;
 @Service
 public class PrincipalOauth2UserService extends DefaultOAuth2UserService {
 
-    @Autowired
-    private BCryptPasswordEncoder bCryptPasswordEncoder;
+
 
     @Autowired
     private UserRepository userRepository;
@@ -34,26 +33,28 @@ public class PrincipalOauth2UserService extends DefaultOAuth2UserService {
 
         //로그인 진행
         String provider = userRequest.getClientRegistration().getClientId();
+
         String providerId = oauth2User.getAttribute("sub");
         String username = provider+"_"+providerId;
-        String password = bCryptPasswordEncoder.encode("더미");
+        System.out.println(username);
         String email = oauth2User.getAttribute("email");
         String role = "ROLE_USEER";
 
 
         //db에 중복된 사용자가 없는지 확인
         User userEntity = userRepository.findByUsername(username);
-
-        if(userEntity != null){
+        System.out.println(userEntity);
+        if(userEntity == null){
             //없으면 db에 저장한다.
+            System.out.println("찾기1");
             userEntity = User.builder()
                     .username(username)
-                    .password(password)
                     .email(email)
                     .role(role)
                     .provider(provider)
                     .providerId(providerId)
                     .build();
+            System.out.println("찾기2");
             userRepository.save(userEntity);
         }
         return new PrincipalDetails(userEntity, oauth2User.getAttributes());
