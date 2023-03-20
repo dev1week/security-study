@@ -10,6 +10,7 @@ import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 import com.example.springsecurity.domain.User;
+import com.example.springsecurity.Config.oauth.Provider.*;
 
 @Service
 public class PrincipalOauth2UserService extends DefaultOAuth2UserService {
@@ -31,14 +32,24 @@ public class PrincipalOauth2UserService extends DefaultOAuth2UserService {
         OAuth2User oauth2User = super.loadUser(userRequest);
         System.out.println("userRequest: "+oauth2User.getAttributes());
 
-        //로그인 진행
-        String provider = userRequest.getClientRegistration().getClientId();
+        OAuth2UserInfo oAuth2UserInfo = null;
+        if(userRequest.getClientRegistration().getRegistrationId().equals("google")){
+            System.out.println("구글 로그인 요청");
+            oAuth2UserInfo = new GoogleUserInfo(oauth2User.getAttributes());
+        }else if(userRequest.getClientRegistration().getRegistrationId().equals("facebook")){
+            System.out.println("페이스북 로그인 요청");
+            oAuth2UserInfo = new FaceBookUserInfo(oauth2User.getAttributes());
+        }else{
+            System.out.println("지원하지 않는 provider 입니다. ");
+        }
 
-        String providerId = oauth2User.getAttribute("sub");
+        //로그인 진행
+        String provider = oAuth2UserInfo.getProvider();
+        String providerId = oAuth2UserInfo.getProviderId();
         String username = provider+"_"+providerId;
         System.out.println(username);
-        String email = oauth2User.getAttribute("email");
-        String role = "ROLE_USEER";
+        String email = oAuth2UserInfo.getEmail();
+        String role = "ROLE_USER";
 
 
         //db에 중복된 사용자가 없는지 확인
@@ -46,7 +57,6 @@ public class PrincipalOauth2UserService extends DefaultOAuth2UserService {
         System.out.println(userEntity);
         if(userEntity == null){
             //없으면 db에 저장한다.
-            System.out.println("찾기1");
             userEntity = User.builder()
                     .username(username)
                     .email(email)
