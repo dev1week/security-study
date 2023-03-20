@@ -12,6 +12,8 @@ import org.springframework.stereotype.Service;
 import com.example.springsecurity.domain.User;
 import com.example.springsecurity.Config.oauth.Provider.*;
 
+import java.util.Map;
+
 @Service
 public class PrincipalOauth2UserService extends DefaultOAuth2UserService {
 
@@ -39,7 +41,11 @@ public class PrincipalOauth2UserService extends DefaultOAuth2UserService {
         }else if(userRequest.getClientRegistration().getRegistrationId().equals("facebook")){
             System.out.println("페이스북 로그인 요청");
             oAuth2UserInfo = new FaceBookUserInfo(oauth2User.getAttributes());
-        }else{
+        }else if(userRequest.getClientRegistration().getRegistrationId().equals("naver")){
+            System.out.println("네이버 로그인 요청");
+            oAuth2UserInfo = new NaverUserInfo((Map)oauth2User.getAttributes().get("response"));
+        }
+        else{
             System.out.println("지원하지 않는 provider 입니다. ");
         }
 
